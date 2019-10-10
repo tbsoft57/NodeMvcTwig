@@ -1,11 +1,9 @@
+chargement automatique de tout les controleurs
+--> Applications differentes ???
+
 commenter tsconfig.json
 
-refaire git 
-
-sqljs test reel
-
-chargement automatique de tout les controleurs
-
-Login à implémenter
+Login à implémenter -> session etc
 
 Tester Materials
+  

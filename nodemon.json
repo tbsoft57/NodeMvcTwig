@@ -1,6 +1,6 @@
 {
-  "watch": ["src/**/*.ts", "src/views/**/*.twig", "static/**/*.css"],
-  "ext": "ts, js, twig, css",
+  "watch": ["src/**/*.ts"],
+  "ext": "ts, js",
   "signal": "SIGINT",
   "exec": "ts-node src/server.ts",
   "env": { "NODE_SQLSERVER": "sqljs", "NODE_PORT": "4200" }

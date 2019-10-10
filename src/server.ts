@@ -3,11 +3,12 @@ import twig from 'twig';
 import socketIO from 'socket.io';
 import appControlers from './controlers/addControler';
 import fs from 'fs';
+import watchr from 'watchr';
 import * as bodyparser from 'body-parser';
 import * as Errors from './Error';
 import { v4 as uuid } from 'uuid';
 import { createConnection, Connection, ConnectionOptions } from 'typeorm';
-import { environment } from './environments/backend';
+import { environment } from './_environments/backend';
 export { express, twig, fs, Errors };
 export class Server {
   public static devMode = (process.env.NODE_ENV == 'DEVELOPMENT');
@@ -33,6 +34,8 @@ export class Server {
     if (this.devMode) {
       IoListener = socketIO.listen(httpServer);
       IoListener.sockets.on('connection', (socket) => { socket.emit('browserReload', runCode); });
+      watchr.open('static',    () => { getNewRunCode(); IoListener.sockets.emit('browserReload', runCode); }, () => {});
+      watchr.open('src/views', () => { getNewRunCode(); IoListener.sockets.emit('browserReload', runCode); }, () => {});
     }
     process.on('SIGINT',  () => { this.closeServer(httpServer, IoListener); });
     process.on('SIGUSR1', () => { this.activateDebug(); });
@@ -118,7 +121,8 @@ export class Server {
     }
   }
 }
-const runCode = Math.random().toString().slice(2);
+function getNewRunCode() { runCode = Math.random().toString().slice(2); }
+let runCode; getNewRunCode();
 const reloadScript = (Server.devMode)? `<script type="text/javascript" src="/socket.io.js"></script><script>var socket = io.connect({transports:["websocket"]});socket.on("browserReload", function (newRunCode) { if (newRunCode!="${runCode}") document.location.reload(true); });</script>` : '';
 export function twigVm(model) { return { reloadScript:reloadScript, vm: model }; }
 Server.start();

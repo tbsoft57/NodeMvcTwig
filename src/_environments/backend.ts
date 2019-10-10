@@ -11,7 +11,7 @@ export const environment = {
     synchronize: true,
     autoSave: true,
     logging: false,
-    entities: ['./src/api/entities/**/*.ts'],
+    entities: ['./src/entities/**/*.ts'],
     migrations: ['./src/api/migration/**/*.ts'],
     subscribers: ['./src/api/subscriber/**/*.ts'],
     cli: { entitiesDir: './src/api/entities', migrationsDir: './src/api/migration', subscribersDir: './src/api/subscriber' },

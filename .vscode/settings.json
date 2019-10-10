@@ -6,6 +6,8 @@
     "sqlite": true,
     "bashLocal": true,
     ".vscode": true,
-    ".git": true
+    ".git": true,
+    ".gitignore": true,
+    "pid": true
   }
 }
