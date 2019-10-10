@@ -1,0 +1,4 @@
+#!/bin/bash
+cd /home/thierry/app2
+npm install --only=production
+echo node_modules a été installé ou mise à jour

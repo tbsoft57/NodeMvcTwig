@@ -1,0 +1,2 @@
+#!/bin/bash
+pm2 log app2 --lines=100

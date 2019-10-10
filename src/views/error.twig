@@ -1,0 +1,6 @@
+{% extends "_master.twig" %}
+{% set title = 'Erreur' %}
+{% block content %}
+    <h1>Erreur {{vm.statusCode}}: {{vm.message}}</h1>
+    <h2><a href="/">Retour au Menu</a></h2>
+{% endblock %}

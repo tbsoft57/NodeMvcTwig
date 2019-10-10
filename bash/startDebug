@@ -1,0 +1,5 @@
+#!/bin/bash
+pm2 flush app2
+echo "$1" > "/home/thierry/app2/debugScope"
+kill -s USR1 $(<"/home/thierry/app2/pid")
+pm2 log app2 --lines=100

@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <base href="/">
+    <title>{{title}}</title>
+    <link rel="icon" href="appicon.ico" />
+    <link rel="stylesheet" type="text/css" href="style.css">
+    {{reloadScript}}
+  </head>
+  <body>
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>

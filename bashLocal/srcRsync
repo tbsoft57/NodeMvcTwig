@@ -1,0 +1,5 @@
+#!/bin/bash
+echo srcRsync begins
+rsync -rvz -e 'ssh -p '${SSL_PORT} --progress --delete src/. ${SSL_USER}:/home/thierry/app2/src
+echo srcRsync ends
+echo

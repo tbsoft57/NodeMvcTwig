@@ -1,0 +1,11 @@
+{
+  "files.exclude": {
+    "node_modules": true,
+    "bash": true,
+    "localStorageLogin": true,
+    "sqlite": true,
+    "bashLocal": true,
+    ".vscode": true,
+    ".git": true
+  }
+}

@@ -1,0 +1,5 @@
+#!/bin/bash
+echo staticRsync begins
+rsync -rvz -e 'ssh -p '${SSL_PORT} --progress --delete static/* ${SSL_USER}:/home/thierry/app2/static --progress
+echo staticRsync ends
+echo
