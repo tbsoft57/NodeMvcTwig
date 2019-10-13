@@ -3,7 +3,7 @@
   "tasks": [
     { "label": " 1 Start",               "command":   "chromium-browser 'http://localhost:4200' & nodemon", "type": "shell" },
     { "label": " 2 LocalInstallModules", "command":   "npm install", "type": "shell" },
-    { "label": " 3 GitCommitPush",       "command":   "bashLocal/gitCommitPush", "type": "shell"},
+    { "label": " 3 GitCommitPush",       "command":   "bashLocal/gitCommitPush", "type": "shell", "presentation": { "focus": true }},
     { "label": " 4 Publish",             "command":   "bashLocal/staticRsync ; bashLocal/srcRsync ; bashLocal/bashRsync ; bashLocal/jsonMdRsync", "type": "shell"},
     { "label": " 5 OvhInstallModules",   "command":   "ssh ${SSL_USER} -p ${SSL_PORT} 'cd /home/thierry/app2 ; ./bash/installModules'", "type": "shell"},
     { "label": " 6 OvhStartApp",         "command":   "ssh ${SSL_USER} -p ${SSL_PORT} 'cd /home/thierry/app2 ; ./bash/startApp'", "type": "shell"},

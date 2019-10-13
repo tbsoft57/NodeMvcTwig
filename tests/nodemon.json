@@ -1,0 +1,7 @@
+{
+  "watch": ["**/*.ts"],
+  "ext": "ts, js",
+  "signal": "SIGINT",
+  "exec": "ts-node express2.ts",
+  "env": { "NODE_SQLSERVER": "sqljs", "NODE_PORT": "4200" }
+}

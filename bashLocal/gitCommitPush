@@ -1,13 +1,4 @@
 #!/bin/bash
 echo Enter commit message
 read commitMessage
-echo Commit and Push to depot?
-read push
-if [[ "YyYESyes" == *"$push"* ]] 
-then
-    git add --all && git commit -m "$commitMessage"
-    # git push --set-upstream origin master -> la première fois
-    git push
-else
-    echo "Canceled"
-fi
+git add --all && git commit -m "$commitMessage"

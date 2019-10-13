@@ -1,9 +1,9 @@
-{% extends "_master.twig" %}
+{% extends "./_master.twig" %}
 {% set title = 'Menu' %}
 {% block content %}
-    <h1>Menu</h1>
+    <h1>Menu ({{app.env}})</h1>
     <ul>
-        <li><a href="addForm">Addition</a></li>
+        <li><a href="addition">Addition</a></li>
         <li><a href="subForm">Soustraction</a></li>
         <li><a href="appError">appError</a></li>
         <li><a href="internalError">internalError</a></li>

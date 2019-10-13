@@ -1,19 +1,16 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": ".",
-    "typeRoots": ["node_modules/@types"],
-    "lib": ["es2015"],
-    "target": "es6",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "noImplicitAny": false,
-    "declaration": false,
-    "downlevelIteration": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "target": "esnext",            // Target la dernière version de EcmaScript (OK pour node)
+    "module": "commonjs",          // les modules ES (export function example() <-> import {example } from 'example') sont transpilés en modules node commonjs (exports.example = function() <-> ex = require('example'))
+    "moduleResolution": "node",    // La strategie de recherche des modules est celle de node (celle de TS càd "classic" n'est plus utilisée)
+    "esModuleInterop": true,       // Permet d'utiliser conjointement les modules ES qui n'ont pas obligatoirement un default export et les modules commonjs    "noImplicitAny": false,
+    "downlevelIteration": true,    // permet d'utiliser les iterables for-of
+    "noImplicitAny": false,        // Si false => une variable sans type est automatiquement affectée au type "any"
+    "emitDecoratorMetadata": true, // Permet d'utiliser les décorateurs (ex:@Entity(), @Column() pour typeOrm) sur les classes et methodes
+    "experimentalDecorators": true // Va de pair avec ci-dessus, on ne peut pas mettre l'un a true sans mettre egalement l'autre.
+                                   // --> necéssite également d'importer "reflect-metadata"
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],      // Fichiers a transpiler
+  "exclude": []                    // Fichiers a exclure de la transpilation
 }

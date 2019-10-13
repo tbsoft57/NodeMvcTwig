@@ -1,0 +1,4 @@
+#!/bin/bash
+ln -s /home/thierry/Developpement/TestsGlobalProjets /home/thierry/Developpement/Projets/NodeMvcTwig/tests
+echo link created
+echo
