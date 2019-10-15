@@ -7,7 +7,7 @@
     { "label": " 4 Publish",             "command":   "bashLocal/staticRsync ; bashLocal/srcRsync ; bashLocal/bashRsync ; bashLocal/jsonMdRsync", "type": "shell"},
     { "label": " 5 OvhInstallModules",   "command":   "ssh ${SSL_USER} -p ${SSL_PORT} 'cd /home/thierry/app2 ; ./bash/installModules'", "type": "shell"},
     { "label": " 6 OvhStartApp",         "command":   "ssh ${SSL_USER} -p ${SSL_PORT} 'cd /home/thierry/app2 ; ./bash/startApp'", "type": "shell"},
-    { "label": " 7 OvhStartDebug",       "command":   "ssh ${SSL_USER} -p ${SSL_PORT} 'cd /home/thierry/app2 ; ./bash/startDebug'", "type": "shell"},
+    { "label": " 7 OvhStartDebug",       "command":   "ssh ${SSL_USER} -p ${SSL_PORT} 'cd /home/thierry/app2 ; ./bash/startDebug NodeMvcTwigServer'", "type": "shell"},
     { "label": " 8 OvhappLog",           "command":   "ssh ${SSL_USER} -p ${SSL_PORT} 'cd /home/thierry/app2 ; ./bash/appLog'", "type": "shell"},
     { "label": " 9 OvhflushLog",         "command":   "ssh ${SSL_USER} -p ${SSL_PORT} 'cd /home/thierry/app2 ; ./bash/flushLog'", "type": "shell"},
     { "label": "10 OvhflushLogs",        "command":   "ssh ${SSL_USER} -p ${SSL_PORT} 'cd /home/thierry/app2 ; ./bash/flushLogs'", "type": "shell"},

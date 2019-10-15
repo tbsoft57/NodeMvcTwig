@@ -1,0 +1,10 @@
+{% extends "../../master.twig" %}
+{% set title = 'Login' %}
+{% block content %}
+    <form method="POST" action="login">
+        Login: <input name="login"/>
+        Pass: <input name="pass"/>
+        <input type="submit" value="Connection">
+    </form>
+    <h2><a href="/">Retour au Menu</a></h2>
+{% endblock %}

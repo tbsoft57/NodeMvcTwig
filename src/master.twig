@@ -2,12 +2,13 @@
   <head>
     <meta charset="UTF-8">
     <base href="/">
-    <title>{{app.appName}} - {{title}}</title>
+    <title>{{settings.appName}} - {{title}}</title>
     <link rel="icon" href="appicon.ico" />
     <link rel="stylesheet" type="text/css" href="style.css">
-    {{app.reloadScript}}
+    {{settings.reloadScript}}
   </head>
   <body>
+    {% if settings.logedIn == true %}Hello {{settings.user.name}}{% endif %}
     <div id="content">
         {% block content %}{% endblock %}
     </div>

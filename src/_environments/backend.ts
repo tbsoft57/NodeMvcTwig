@@ -1,6 +1,7 @@
 export const environment = {
   appName: 'NodeMvcTwig',
   origin: 'app2.tbsoft.fr',
+  proxyIp: '127.0.0.1',
   ormconfig: {
     type: 'sqljs',
     location: './sqlite/database.sqlite',

@@ -1,18 +1,10 @@
-{% extends "./_master.twig" %}
-
-ormconfig:
-    entities: ['./src/entities/**/*.ts'],
-    migrations: ['./src/api/migration/**/*.ts'],
-    subscribers: ['./src/api/subscriber/**/*.ts'],
-    cli: { entitiesDir: './src/api/entities', migrationsDir: './src/api/migration', subscribersDir: './src/api/subscriber' },
-
 dynamiser le chargement de tous les errors.ts
 
-tester trust proxy false en prod
+ormconfig: cli: { entitiesDir: './src/api/entities', migrationsDir: './src/api/migration', subscribersDir: './src/api/subscriber' },
 
-chargement automatique de tout les controleurs
+commenter 
 
-Login à implémenter controler view 
+http://expressjs.com/en/advanced/best-practice-performance.html
 
-Tester Materials
+https://material.io/collections/developer-tutorials/#web
   

@@ -1,10 +1,15 @@
-{% extends "./_master.twig" %}
+{% extends "../../master.twig" %}
 {% set title = 'Menu' %}
 {% block content %}
-    <h1>Menu ({{app.env}})</h1>
+    <h1>Menu ({{settings.env}})</h1>
     <ul>
         <li><a href="addition">Addition</a></li>
-        <li><a href="subForm">Soustraction</a></li>
+        {% if settings.logedIn == true %}
+        <li><a href="settings">Settings</a></li>
+        {% endif %}
+        <li><a href="login">Login</a></li>
+        <li><a href="logout">Logout</a></li>
+        <li><a href="error404">404Error</a></li>
         <li><a href="appError">appError</a></li>
         <li><a href="internalError">internalError</a></li>
     </ul>

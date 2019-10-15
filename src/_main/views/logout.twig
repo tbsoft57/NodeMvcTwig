@@ -1,0 +1,8 @@
+{% extends "../../master.twig" %}
+{% set title = 'LogOut' %}
+{% block content %}
+    <form method="POST" action="logout">
+        <input type="submit" value="DéConnection">
+    </form>
+    <h2><a href="/">Retour au Menu</a></h2>
+{% endblock %}

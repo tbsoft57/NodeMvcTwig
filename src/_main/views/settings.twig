@@ -1,6 +1,7 @@
 {% extends "../../master.twig" %}
-{% set title = 'Erreur' %}
+{% set title = 'Resultat' %}
 {% block content %}
-    <h1>Erreur {{httpStatus}}/{{name}}: {{message}}</h1>
+    <h2>settings:</h2>
+    {{ settingsJson | nl2br}}
     <h2><a href="/">Retour au Menu</a></h2>
 {% endblock %}
