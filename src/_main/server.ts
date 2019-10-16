@@ -1,10 +1,9 @@
 import 'reflect-metadata';                  // Necessaire pour typeOrm: permet de faire de la reflexion sur les classes, proprietes, methodes
 import express from 'express';              // Serveur http
+import compression from 'compression';      // Permet la compression gzip
 import session from 'express-session';      // Complement permettant de gerer les sessions
-import cookieParser from 'cookie-parser';   // Permet de mettre en place des cookies
-import bodyParser from 'body-parser';       // Permet d'injecter dans req les parametres en provenance de l'Url (GET) ou du body (post)
+import twig from 'twig';                    // Gestionnaire de templates
 import cors from 'cors';                    // Permet de positionner le header origine pour eviter ou permettre (*) le cross-site
-import twig from 'twig';                    // Injecte la methode render dans res pour rendre les vues twig avec les données du viewModel
 import socketIO from 'socket.io';           // Permet de faire du push over http (ici pour gerer le rafraichissement du browser pour le dev debbug)
 import fsp from 'fs.promises';              // Permet d'acceder au file system avec async await
 import fs from 'fs';                        // Permet d'acceder au file system
@@ -16,6 +15,7 @@ import { createConnection, Connection, ConnectionOptions } from 'typeorm'; // Ob
 import { environment } from '../_environments/backend';
 import { User } from './entities/user';
 import * as error from '../errors';
+import { appError } from './errors';
 
 export { express, fs, fsp, path, error, Connection, environment, User };
 export class NodeMvcTwigServer {
@@ -37,22 +37,22 @@ export class NodeMvcTwigServer {
   public static PublicRouter = express.Router();
 
   public static async start() {
+    await fsp.writeFile('pid', process.pid);
     await this.setClassProperties();
     await this.getNewRunCodeAndScript();
-    await fsp.writeFile('pid', process.pid);
     await this.createConnectionPool(this.sqlServer);
     await this.importAppControlers();
     twig.cache(!this.devMode);
     this.httpListener = this.httpRequestHandler
+    .use(compression())
     .use(express.static('static'))
-    .use(bodyParser.urlencoded({ extended: true }))
-    .use(bodyParser.json())
-    .use(cookieParser())
-    .use(session({ secret: 'i-love-husky', resave: false, saveUninitialized: true, cookie: { httpOnly: false } }))
+    .use(express.urlencoded({ extended: true }))
+    .use(express.json())
+    .use(session({ secret: 'i-love-husky', resave: false, saveUninitialized: true, cookie: { httpOnly: true } }))
     .use(cors({ origin: (this.devMode) ? '*' : environment.origin, optionsSuccessStatus: 200 }))
-    .all('*', async (req, res, next) => await this.reportIncomminRequest(req, res, next))
+    .all('*', async (req, res, next) => await this.checkIncomminRequest(req, res, next))
     .use(this.PublicRouter)
-    .use(this.connectionTest)
+    .use('*', async (req, res, next) => await this.connectionTest(req, res, next))
     .use(this.PrivateRouter)
     .all('*', (req, res, next) => next(new error.Error404()))
     .use(async (err, req, res, next) => await this.errorHandler(err, res))
@@ -65,9 +65,66 @@ export class NodeMvcTwigServer {
 
   public static async stop() { this.handleSIGINT(); }
 
+  public static async login(req, res , next) {
+    this.debugLog('NodeMvcTwigServer:login()' , 'Starts');
+    try {
+      this.debugLog('NodeMvcTwigServer:login()' , `Check User ${req.body.login}`);
+      const user = await User.getByLogin(req.body.login);
+      if (user && await bcrypt.compare(req.body.pass, user.pass)) {
+        this.debugLog('NodeMvcTwigServer:login()' , `User ${user.name} is loged In`);
+        await this.CreateSessionAndCookies(req, res, user);
+        res.redirect('/');
+      } else {
+        this.debugLog('NodeMvcTwigServer:login()' , `Authentication rejected for User ${req.body.login}`);
+        next(new error.NoValidUser());
+      }
+    } catch (err) { next(err); }
+  }
+
+  private static async CreateSessionAndCookies(req, res, user) {
+    this.debugLog('NodeMvcTwigServer:CreateSessionAndCookies()' , 'Created');
+    req.session.logedIn = true; this.httpRequestHandler.set('logedIn', true);
+    req.session.user = user; this.httpRequestHandler.set('user', user);
+    this.createcsrfToken(req);
+  }
+
+  private static createcsrfToken(req) {
+    const token = uuid(); req.session.csrfToken = token;
+    this.httpRequestHandler.set('csrfHiddenInput', `<input type="hidden" name="csrfToken" value="${token}"/>`); }
+
+  public static async logout(req, res, next) {
+    this.debugLog('NodeMvcTwigServer:logout()' , 'Starts');
+    await this.CloseSession(req, res);
+    res.redirect('/');
+  }
+
+  private static async CloseSession(req, res) {
+    this.debugLog('NodeMvcTwigServer:CloseSession()' , 'LogedOut');
+    req.session.logedIn = false; this.httpRequestHandler.set('logedIn', false);
+    req.session.user = null; this.httpRequestHandler.set('user', null);
+  }
+
+  private static async connectionTest(req, res, next) {
+    if (!req.session.logedIn) await this.checkSSLlogin(req, res);
+    next((req.session.logedIn) ? null : new error.Error404());
+  }
+
+  private static async checkSSLlogin(req, res) {
+    const SSLlogin = req.get('SSL_CLIENT_S_DN_Email');
+    if (SSLlogin) {
+      this.debugLog('NodeMvcTwigServer:checkSSLlogin()' , 'SSLlogin: ' + SSLlogin);
+      const user = await User.getByLogin(SSLlogin);
+      if (user) {
+        this.debugLog('NodeMvcTwigServer:checkSSLlogin()' , `User ${user.name} is loged In`);
+        await this.CreateSessionAndCookies(req, res, user);
+      } else this.debugLog('NodeMvcTwigServer:checkSSLlogin()' , `Authentication rejected for User ${SSLlogin}`);
+    }
+  }
+
   public static debugLog(scope: string, mess: string) { if (this.debugStart >= 0  && scope.includes(this.debugScope)) console.log(scope + ': ' + mess); }
 
   private static enableBrowserReload() {
+    this.debugLog('NodeMvcTwigServer:enableBrowserReload()' , 'Starts');
     this.IoListener = socketIO.listen(this.httpListener);
     this.IoListener.sockets.on('connection', (socket) => { socket.emit('browserReload', this.httpRequestHandler.get('runCode')); });
     let fsTimeout; const dirs = this.viewDirs.slice(); dirs.push('static'); dirs.push('src');
@@ -79,38 +136,25 @@ export class NodeMvcTwigServer {
     }
   }
 
-  private static async reportIncomminRequest(req, res, next) {
-    if (req.url === '/socket.io.js.map') res.status(404).end();
-    else {
-      this.debugLog('NodeMvcTwigServer:reportIncomminRequest()', `${req.method} ${req.url}`);
-      this.httpRequestHandler.set('ip', req.ip);
-      this.httpRequestHandler.set('ips', req.ips);
-      this.httpRequestHandler.set('method', req.method);
-      this.httpRequestHandler.set('url', req.url);
-      this.httpRequestHandler.set('originalUrl', req.originalUrl);
-      this.httpRequestHandler.set('path', req.path);
-      if (!req.session.login) await this.checkSSLlogin(req, res);
-      next();
+  private static async checkIncomminRequest(req, res, next) {
+    this.debugLog('NodeMvcTwigServer:checkIncomminRequest()', `${req.method} ${req.url}`);
+    if (!req.session.csrfToken) this.createcsrfToken(req);
+    this.httpRequestHandler
+    .set('ip',          req.ip)
+    .set('ips',         req.ips)
+    .set('method',      req.method)
+    .set('url',         req.url)
+    .set('originalUrl', req.originalUrl)
+    .set('path',        req.path);
+    switch (req.method) {
+      case 'GET' : next(); break;
+      case 'POST': next((req.body.csrfToken === req.session.csrfToken) ? null : new error.NoValidXrsfTocken()); break;
+      default: next(new error.NotValidRestMethod());
     }
   }
 
-  private static connectionTest(req, res, next) {
-    if (!req.session.login) next(new error.Error404());
-    else if (req.method !== 'GET' && req.headers['X-XSFR-TOKEN'] !== req.session['X-XSFR-TOKEN']) next(new error.NoValidXrsfTocken());
-    else next();
-  }
-
   private static async importAppControlers() {
-    this.PublicRouter
-    .get('/', (req, res) => { res.render('index'); })
-    .get('/index', (req, res) => { res.render('index'); })
-    .get('/home', (req, res) => { res.render('index'); })
-    .get('/error', (req, res) => { res.render('error'); })
-    .get ('/settings', (req, res) => { res.render('settings', ); })
-    .get ('/login', (req, res) => { res.render('login', ); })
-    .post('/login', (req, res, next) => { this.login(req, res , next); })
-    .get ('/logout', (req, res) => { res.render('logout', ); })
-    .post('/logout', (req, res, next) => { this.logout(req, res, next); });
+    this.debugLog('NodeMvcTwigServer:importAppControlers()' , 'Starts');
     try {
       for (const entry of this.appDirs) {
         const routers = await fsp.readdir(entry + '/controlers');
@@ -127,6 +171,11 @@ export class NodeMvcTwigServer {
     this.debugLog('NodeMvcTwigServer:getNewRunCodeAndScript()' , 'runCode and reloadScript created');
   }
 
+  private static async twigEngine(file, vm, callback) {
+    // Mettre: .engine('twig', await this.twigEngine) -> dans setClassProperties()
+    twig.renderFile(file, vm, (err, html) => { callback(err, html); });
+  }
+
   private static async setClassProperties() {
     this.env = process.env.NODE_ENV;
     this.devMode = (this.env === 'DEVELOPMENT');
@@ -135,7 +184,7 @@ export class NodeMvcTwigServer {
     this.sqlServer = process.env.NODE_SQLSERVER || 'sqljs';
     this.httpPort = process.env.NODE_PORT || '4201';
     this.httpRequestHandler = express()
-    .engine('twig', await this.twigEngine)
+    .set('twig options', { allow_async: true, strict_variables: false })
     .set('view engine', 'twig')
     .set('views', this.viewDirs)
     .set('trust proxy', environment.proxyIp) // on fait confiance au proxy apache (127.0.0.1) qui renvoi l'ip initiale du client, sinon si trust proxy = false, l'ip client est celle du proxy
@@ -158,94 +207,14 @@ export class NodeMvcTwigServer {
     console.log(`\n${environment.appName} starts Pid=${process.pid} Env=${this.env} Debug=${this.devMode} SqlServer=${this.sqlServer} NodeHttpPort=${this.httpPort} Cwd=${process.cwd()}`);
   }
 
-  private static async twigEngine(file, vm, callback) {
-    vm.settingsJson = JSON.stringify(vm.settings, null, 4); // TODO Enlever
-    twig.renderFile(file, vm, (err, html) => { callback(err, html); });
-  }
-
   private static async errorHandler(err, res) {
-    if (!err) err = new error.Error404(); // Si il n'y a pas d'erreur, c'est qu'aucune route n'a matchée
-    // Sinon on teste si c'est une appError => il y a un httpStatus
-    if (err.httpStatus) this.debugLog('NodeMvcTwigServer:errorHandler()' , `Status ${err.httpStatus} Message ${err.message}`);
+    if (err.message.includes('Failed to lookup view')) err = new error.Error404();
+    if (err instanceof appError) this.debugLog('NodeMvcTwigServer:errorHandler()' , `Status ${err.httpStatus} Message ${err.message}`);
     else {
-      const e = this.getAppError(err); // Dernière chance de trouver une appError
-      if (e) { err = e; this.debugLog('NodeMvcTwigServer:errorHandler()' , `Status ${err.httpStatus} Message ${err.message}`);
-      } else {
-        console.error(err);
-        err = (this.devMode) ? new error.appError(500, err.message, 'InternalServerError') : new error.InternalServerError();
-      }
+        console.error('NodeMvcTwigServer:errorHandler()' , err.message); console.error(err);
+        err =  new error.InternalServerError((this.devMode) ? err.message : null);
     }
     res.status(err.httpStatus); res.render('error', err);
-  }
-
-  private static getAppError(err): Error {
-    switch (err.code) {
-        case 'ENOTFOUND':
-        case 'ER_ACCESS_DENIED_ERROR': return new error.DbAccessDenied();
-        case 'ER_DUP_ENTRY': return new error.DuplicateEntry();
-        default:
-          if (err.message.includes('Failed to lookup view')) return new error.Error404();
-          return null;
-    }
-  }
-
-  private static async checkSSLlogin(req, res) {
-    const SSLlogin = req.get('SSL_CLIENT_S_DN_Email');
-    if (SSLlogin) {
-      this.debugLog('NodeMvcTwigServer:checkSSLlogin()' , 'SSLlogin: ' + SSLlogin);
-      const user = await User.getByLogin(SSLlogin);
-      if (user) {
-        this.debugLog('NodeMvcTwigServer:checkSSLlogin()' , `User ${user.name} is loged In`);
-        await this.CreateSessionAndCookies(req, res, user);
-      } else this.debugLog('NodeMvcTwigServer:checkSSLlogin()' , `Authentication rejected for User ${SSLlogin}`);
-    }
-  }
-
-  private static async login(req, res , next) {
-    this.debugLog('NodeMvcTwigServer:login()' , 'Starts');
-    try {
-      this.debugLog('NodeMvcTwigServer:login()' , `Check User ${req.body.login}`);
-      const user = await User.getByLogin(req.body.login);
-      if (user && await bcrypt.compare(req.body.pass, user.pass)) {
-        this.debugLog('NodeMvcTwigServer:login()' , `User ${user.name} is loged In`);
-        await this.CreateSessionAndCookies(req, res, user);
-        res.redirect('/');
-      } else {
-        this.debugLog('NodeMvcTwigServer:login()' , `Authentication rejected for User ${req.body.login}`);
-        next(new error.NoValidUser());
-      }
-    } catch (err) { next(err); }
-  }
-
-  private static async CreateSessionAndCookies(req, res, user) {
-    this.debugLog('NodeMvcTwigServer:CreateSessionAndCookies()' , 'Starts');
-    const token = uuid();
-    req.session.login = true;
-    req.session.user = user;
-    req.session['X-XSFR-TOKEN'] = token;
-    res.cookie('XSRF-COOKIE', token);
-    this.httpRequestHandler.set('user', user);
-    this.httpRequestHandler.set('logedIn', true);
-    this.httpRequestHandler.set('X-XSFR-TOKEN', token);
-    this.debugLog('NodeMvcTwigServer:CreateSessionAndCookies()' , `Created with Token ${token}`);
-  }
-
-  private static async logout(req, res, next) {
-    this.debugLog('NodeMvcTwigServer:logout()' , 'Starts');
-    await this.CloseSession(req, res);
-    res.redirect('/');
-  }
-
-  private static async CloseSession(req, res) {
-    this.debugLog('NodeMvcTwigServer:CloseSession()' , 'Starts');
-    req.session.login = false;
-    req.session.user = null;
-    req.session['X-XSFR-TOKEN'] = null;
-    res.clearCookie('XSRF-COOKIE');
-    this.httpRequestHandler.set('user', null);
-    this.httpRequestHandler.set('logedIn', false);
-    this.httpRequestHandler.set('X-XSFR-TOKEN', null);
-    this.debugLog('NodeMvcTwigServer:CloseSession()' , 'LogedOut');
   }
 
   private static async createConnectionPool(sqlServer: string) {

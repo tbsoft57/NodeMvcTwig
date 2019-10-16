@@ -2,14 +2,14 @@
   "files.exclude": {
     "localStorageLogin": true,
     "sqlite": true,
-    "bashLocal": true,
     ".git": true,
     ".gitignore": true,
     "pid": true,
     "package-lock.json": true,
     "tests/tsconfig.json": true,
-    "node_modules": true,
     ".vscode": true,
-    "bash": true
+    "bashLocal": true,
+    "bash": true,
+    "node_modules": true
   }
 }

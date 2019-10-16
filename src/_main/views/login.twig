@@ -2,9 +2,9 @@
 {% set title = 'Login' %}
 {% block content %}
     <form method="POST" action="login">
-        Login: <input name="login"/>
-        Pass: <input name="pass"/>
+        {{settings.csrfHiddenInput}}
+        Login: <input type="text" name="login"/>
+        Pass: <input type="password" name="pass"/>
         <input type="submit" value="Connection">
     </form>
-    <h2><a href="/">Retour au Menu</a></h2>
 {% endblock %}

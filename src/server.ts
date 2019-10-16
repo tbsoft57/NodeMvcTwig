@@ -1,4 +1,3 @@
-import { NodeMvcTwigServer, express, fs, fsp, path, error, Connection, environment, User } from './_main/server';
-export { NodeMvcTwigServer, express, fs, fsp, path, error, Connection, environment, User };
-
+export { NodeMvcTwigServer, express, fs, fsp, path, Connection, environment, error, User } from './_main/server';
+import { NodeMvcTwigServer } from './_main/server';
 NodeMvcTwigServer.start();

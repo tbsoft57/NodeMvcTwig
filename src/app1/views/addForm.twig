@@ -2,9 +2,9 @@
 {% set title = 'Addition' %}
 {% block content %}
     <form method="POST" action="addition">
-        a: <input name="a" value="0"/>
-        b: <input name="b" value="0"/>
+        {{settings.csrfHiddenInput}}
+        a: <input type="number" name="a" value="0"/>
+        b: <input type="number" name="b" value="0"/>
         <input type="submit" value="Additionner">
     </form>
-    <h2><a href="/">Retour au Menu</a></h2>
 {% endblock %}

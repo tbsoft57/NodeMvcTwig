@@ -7,8 +7,8 @@ export class appError extends Error {
       this.name = name;
   }
 }
-
-export class InternalServerError extends appError { constructor() { super(500, 'Erreur sur serveur!', 'InternalServerError'); } }
+export class InternalServerError extends appError { constructor(mess: string = 'Erreur sur serveur!') { super(500, mess, 'InternalServerError'); } }
+export class Error404 extends appError { constructor() { super(404, 'Page inexistante!', 'NotFound'); } }
 export class NotFound extends appError { constructor() { super(404, 'Aucune donnée trouvée!', 'NotFound'); } }
 export class NotUpdated extends appError { constructor() { super(409, 'Aucune mise à jour effectuée!', 'NotUpdated'); } }
 export class NotInserted extends appError { constructor() { super(409, 'Aucun ajout effectuée!', 'NotInserted'); } }
@@ -20,4 +20,3 @@ export class DbAccessDenied extends appError { constructor() { super(403, 'Conne
 export class NoValidXrsfTocken extends appError { constructor() { super(403, 'XrsfTocken non valide!', 'NoValidXrsfTocken'); } }
 export class NoValidUser extends appError { constructor() { super(401, 'Utilisateur non valide!', 'NoValidUser'); } }
 export class DuplicateEntry extends appError { constructor() { super(409, 'Enregistrement déjà existant!', 'DuplicateEntry'); } }
-export class Error404 extends appError { constructor() { super(404, 'Page inexistante!', 'NotFound'); } }

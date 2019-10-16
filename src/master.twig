@@ -9,6 +9,19 @@
   </head>
   <body>
     {% if settings.logedIn == true %}Hello {{settings.user.name}}{% endif %}
+    <h1>Menu ({{settings.env}})</h1>
+    <ul>
+        <li><a href="">Acceuil</a></li>
+        <li><a href="addition">Addition</a></li>
+        {% if settings.logedIn == true %}
+        <li><a href="private">Private</a></li>
+        {% endif %}
+        <li><a href="login">Login</a></li>
+        <li><a href="logout">Logout</a></li>
+        <li><a href="error404">404Error</a></li>
+        <li><a href="appError">appError</a></li>
+        <li><a href="internalError">internalError</a></li>
+    </ul>
     <div id="content">
         {% block content %}{% endblock %}
     </div>

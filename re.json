@@ -1,0 +1,46 @@
+{
+  settings: {
+    'x-powered-by': true,
+    etag: 'weak',
+    'etag fn': [Function: generateETag],
+    env: 'DEVELOPMENT',
+    'query parser': 'extended',
+    'query parser fn': [Function: parseExtendedQueryString],
+    'subdomain offset': 2,
+    'trust proxy': '127.0.0.1',
+    'trust proxy fn': [Function: trust],
+    view: [Function: View],
+    views: [
+      '/home/thierry/Developpement/Projets/NodeMvcTwig/src/_main/views/',
+      '/home/thierry/Developpement/Projets/NodeMvcTwig/src/app1/views/'
+    ],
+    'jsonp callback name': 'callback',
+    'twig options': { allow_async: true, strict_variables: false },
+    'view engine': 'twig',
+    appName: 'NodeMvcTwig',
+    origin: 'app2.tbsoft.fr',
+    devMode: true,
+    sqlServer: 'sqljs',
+    httpPort: '4200',
+    appPid: 27053,
+    processCwd: '/home/thierry/Developpement/Projets/NodeMvcTwig',
+    runCode: '9760026469608205',
+    reloadScript: '<script type="text/javascript" src="/socket.io.js"></script><script>var socket = io.connect({transports:["websocket"]});socket.on("browserReload", function (newRunCode) { if (newRunCode!="9760026469608205") document.location.reload(true); });</script>',
+    csrfHiddenInput: '<input type="hidden" name="csrfToken" value="9642c2dd-b01b-41f8-8aa2-910ade4cc2d6"/>'
+  },
+  ip: '::1',
+  ips: [],
+  method: 'GET',
+  url: '/',
+  originalUrl: '/',
+  path: '/',
+  _locals: [Object: null prototype] {
+    ip: '::1',
+    ips: [],
+    method: 'GET',
+    url: '/',
+    originalUrl: '/',
+    path: '/'
+  },
+  cache: false
+}

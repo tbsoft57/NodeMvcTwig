@@ -2,3 +2,4 @@
 echo Enter commit message
 read commitMessage
 git add --all && git commit -m "$commitMessage"
+git push
