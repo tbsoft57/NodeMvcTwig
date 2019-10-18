@@ -1,0 +1,68 @@
+@import './_main/theming';
+@include mat-core();
+
+$primary: mat-palette($mat-blue, 500, A100, 900);
+$accent: mat-palette($mat-green, 500, A100, 900);
+$warn: mat-palette($mat-red, 500, A100, 900);
+$lightTheme: mat-light-theme($primary, $accent, $warn);
+$darkTheme: mat-dark-theme($primary, $accent, $warn);
+
+@include angular-material-theme($lightTheme);
+
+.light-theme {
+  @include angular-material-theme($lightTheme);
+}
+
+.dark-theme {
+  @include angular-material-theme($darkTheme);
+}
+
+@media print {
+  .notprint {
+    display: none !important;
+  }
+}
+
+body {
+  background-color: map-get($accent, 50) !important;
+}
+
+h1 {
+  color: mat-color($warn, lighter);
+  margin: 0 0 0.1em 0;
+}
+
+a {
+  margin: 0 0.5em 0 0.5em !important;
+  padding: 0 !important;
+  font-size: 18px !important;
+}
+
+[noSpin]::-webkit-inner-spin-button,
+[noSpin]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+span[matSuffix] {
+  white-space: pre;
+}
+
+.number {
+  text-align: right;
+}
+
+.mat-card {
+  background-color: map-get($primary, 50);
+}
+
+.mat-icon {
+  color: mat-color($primary, darker);
+}
+
+.mdl-layout__content {
+  padding: 1em;
+}
+
+.page-content {
+  padding: 1em;
+}

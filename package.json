@@ -9,7 +9,6 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
-    "consolidate": "^0.15.1",
     "cors": "^2.8.4",
     "express": "^4.17.1",
     "express-session": "^1.15.6",
@@ -34,7 +33,6 @@
     "@types/socket.io": "^2.1.4",
     "@types/sql.js": "^1.0.2",
     "@types/twig": "^1.12.1",
-    "@types/uuid": "^3.4.5",
-    "tslint": "^5.20.0"
+    "@types/uuid": "^3.4.5"
   }
 }

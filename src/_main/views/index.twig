@@ -1,5 +1,21 @@
 {% extends "../../master.twig" %}
 {% set title = 'Menu' %}
 {% block content %}
-  Welcome to {{settings.appName}}
+<div class="mdl-card">
+  <div class="mdl-card__title">
+    <h4>Welcome to {{settings.appName}}</h4>
+  </div>
+  <div class="mdl-card__media">
+    Media
+  </div>
+  <div class="mdl-card__supporting-text">
+    <h5>Angular Material</h5>
+  </div>
+  <div class="mdl-card__actions">
+    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored">Button</button>
+    <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Button</button>
+    <br><br>
+    <input class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="35" tabindex="0">
+  </div>
+</div>
 {% endblock %}

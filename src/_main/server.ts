@@ -1,7 +1,7 @@
 import 'reflect-metadata';                  // Necessaire pour typeOrm: permet de faire de la reflexion sur les classes, proprietes, methodes
 import express from 'express';              // Serveur http
 import compression from 'compression';      // Permet la compression gzip
-import session from 'express-session';      // Complement permettant de gerer les sessions
+import session from 'express-session';      // Compélement permettant de gerer les sessions
 import twig from 'twig';                    // Gestionnaire de templates
 import cors from 'cors';                    // Permet de positionner le header origine pour eviter ou permettre (*) le cross-site
 import socketIO from 'socket.io';           // Permet de faire du push over http (ici pour gerer le rafraichissement du browser pour le dev debbug)
@@ -52,7 +52,7 @@ export class NodeMvcTwigServer {
     .use(cors({ origin: (this.devMode) ? '*' : environment.origin, optionsSuccessStatus: 200 }))
     .all('*', async (req, res, next) => await this.checkIncomminRequest(req, res, next))
     .use(this.PublicRouter)
-    .use('*', async (req, res, next) => await this.connectionTest(req, res, next))
+    .use('*', async (req, res, next) => await this.checkSessionConnection(req, res, next))
     .use(this.PrivateRouter)
     .all('*', (req, res, next) => next(new error.Error404()))
     .use(async (err, req, res, next) => await this.errorHandler(err, res))
@@ -104,7 +104,7 @@ export class NodeMvcTwigServer {
     req.session.user = null; this.httpRequestHandler.set('user', null);
   }
 
-  private static async connectionTest(req, res, next) {
+  private static async checkSessionConnection(req, res, next) {
     if (!req.session.logedIn) await this.checkSSLlogin(req, res);
     next((req.session.logedIn) ? null : new error.Error404());
   }
@@ -171,9 +171,10 @@ export class NodeMvcTwigServer {
     this.debugLog('NodeMvcTwigServer:getNewRunCodeAndScript()' , 'runCode and reloadScript created');
   }
 
+  // Utile si on veut intercepter les res.render pour effetuer des traitements avant de transmettre à twig
   private static async twigEngine(file, vm, callback) {
-    // Mettre: .engine('twig', await this.twigEngine) -> dans setClassProperties()
-    twig.renderFile(file, vm, (err, html) => { callback(err, html); });
+    // Pour que cette methode soit appelée il faut compléter httpRequestHandler avec .engine('twig', await this.twigEngine) -> dans setClassProperties()
+    twig.renderFile(file, vm, (err, html) => { callback(err, html); }); // twig construit le html final à partir de file
   }
 
   private static async setClassProperties() {

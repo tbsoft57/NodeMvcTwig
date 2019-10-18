@@ -1,0 +1,11 @@
+<a class="mdl-navigation__link" href="">Acceuil</a>
+<a class="mdl-navigation__link" href="addition">Addition</a>
+{% if settings.logedIn %}
+<a class="mdl-navigation__link" href="private">Private</a>
+<a class="mdl-navigation__link" href="logout">Logout</a>
+{% else %}
+<a class="mdl-navigation__link" href="login">Login</a>
+{% endif %}
+<a class="mdl-navigation__link" href="error404">404Error</a>
+<a class="mdl-navigation__link" href="appError">appError</a>
+<a class="mdl-navigation__link" href="internalError">internalError</a>

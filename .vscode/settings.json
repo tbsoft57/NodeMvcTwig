@@ -7,9 +7,9 @@
     "pid": true,
     "package-lock.json": true,
     "tests/tsconfig.json": true,
-    ".vscode": true,
     "bashLocal": true,
     "bash": true,
-    "node_modules": true
+    "node_modules": true,
+    ".vscode": true
   }
 }
