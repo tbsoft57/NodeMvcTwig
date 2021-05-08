@@ -18,7 +18,7 @@
     "socket.io": "^2.1.1",
     "sql.js": "^1.0.0",
     "twig": "^1.12.0",
-    "typeorm": "^0.2.19",
+    "typeorm": "^0.2.25",
     "uuid": "^3.3.3"
   },
   "devDependencies": {
