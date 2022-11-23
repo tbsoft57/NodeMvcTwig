@@ -15,7 +15,7 @@
     "fs.promises": "^0.1.2",
     "path": "^0.12.7",
     "reflect-metadata": "^0.1.10",
-    "socket.io": "^2.1.1",
+    "socket.io": "^2.5.0",
     "sql.js": "^1.0.0",
     "twig": "^1.12.0",
     "typeorm": "^0.2.19",
